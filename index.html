@@ -33,7 +33,7 @@
       border-radius: 50% !important;
       border: 2px solid #ffffff;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      object-fit: cover; /* 長方形の画像でも崩れずに中心で丸くくり抜く */
+      object-fit: cover;
       box-sizing: border-box;
       cursor: pointer;
     }
@@ -77,50 +77,34 @@
       attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
     }).addTo(map);
 
-    const spots = [
-      {
-        title: "頸南バスの中型7mたち",
-        lat: 37.0255,
-        lng: 138.2552,
-        imageUrl: "https://assets.st-note.com/img/1787228238-I30KFn8Zp9o6eGbif5lQLEqA.png?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
-        noteUrl: "https://note.com/yon4k/n/n712a50e4dae9"
-      },
-      {
-        title: "富士急モビリティ 高尾",
-        lat: 35.3415,
-        lng: 139.1840,
-        imageUrl: "https://assets.st-note.com/production/uploads/images/234266342/picture_pc_64952a7de40bc77339cf9469d63090b2.png?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
-        noteUrl: "https://note.com/yon4k/n/n29549ae1e14a"
-      },
-      {
-        title: "小笠原村営バス 小港海岸",
-        lat: 27.0602,
-        lng: 142.1967,
-        imageUrl: "https://assets.st-note.com/production/uploads/images/247812513/picture_pc_7f6ada3fb403176b33921c6ddf3a8d66.png?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
-        noteUrl: "https://note.com/yon4k/n/na43451778855"
-      }
-    ];
+    // 外部の spots.json からデータを読み込んでピンを配置
+    fetch('spots.json')
+      .then(response => response.json())
+      .then(spots => {
+        spots.forEach(spot => {
+          const customIcon = L.divIcon({
+            className: 'custom-pin-container',
+            html: `<img src="${spot.imageUrl}" class="photo-pin" alt="preview">`,
+            iconSize: [48, 48],
+            iconAnchor: [24, 24]
+          });
 
-    spots.forEach(spot => {
-      const customIcon = L.divIcon({
-        className: 'custom-pin-container',
-        html: `<img src="${spot.imageUrl}" class="photo-pin" alt="preview">`,
-        iconSize: [48, 48],
-        iconAnchor: [24, 24]
+          const popupHTML = `
+            <div class="popup-content">
+              <img src="${spot.imageUrl}" alt="photo">
+              <h4>${spot.title}</h4>
+              <a href="${spot.noteUrl}" target="_blank" rel="noopener">noteで読む</a>
+            </div>
+          `;
+
+          L.marker([spot.lat, spot.lng], { icon: customIcon })
+            .addTo(map)
+            .bindPopup(popupHTML);
+        });
+      })
+      .catch(error => {
+        console.error('spots.jsonの読み込みに失敗しました:', error);
       });
-
-      const popupHTML = `
-        <div class="popup-content">
-          <img src="${spot.imageUrl}" alt="photo">
-          <h4>${spot.title}</h4>
-          <a href="${spot.noteUrl}" target="_blank" rel="noopener">noteで読む</a>
-        </div>
-      `;
-
-      L.marker([spot.lat, spot.lng], { icon: customIcon })
-        .addTo(map)
-        .bindPopup(popupHTML);
-    });
   </script>
 </body>
 </html>

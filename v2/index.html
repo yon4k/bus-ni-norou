@@ -498,7 +498,7 @@
       });
     }
 
-    // 5. リストクリック時のフォーカス処理（目標座標自体を北へシフトさせて確実に上部に配置）
+    // 5. リストクリック時のフォーカス処理（上部空きエリアの中央にピタッと収まるよう調整）
     function focusSpot(id) {
       const target = allMarkers.find(m => m.id === id);
       if (target) {
@@ -506,8 +506,8 @@
         const targetZoom = target.data.zoom || 12;
 
         if (isMobile) {
-          // 緯度を南側へ引く（＝地図の中心を南にずらすことで、ピンを画面の上へ押し出す）
-          const latOffset = 0.08 * Math.pow(2, 12 - targetZoom);
+          // 下パネル（40vh）の上の空きスペース（60vh）の中央に収めるための補正（0.025）
+          const latOffset = 0.025 * Math.pow(2, 12 - targetZoom);
           const adjustedLat = target.data.lat - latOffset;
 
           map.flyTo([adjustedLat, target.data.lng], targetZoom, {

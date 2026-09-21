@@ -489,16 +489,15 @@
 function focusSpot(id) {
   const target = allMarkers.find(m => m.id === id);
   if (target) {
-    // スマホ表示かPC表示かで画面下部の避けるエリアサイズを変更
     const isMobile = window.innerWidth <= 600;
-    const paddingBottom = isMobile ? window.innerHeight * 0.48 : 0;
+    // スマホ時は画面高さの約68%を下から避けることで、ピンを画面のかなり上寄りへパン移動させる
+    const paddingBottom = isMobile ? window.innerHeight * 0.68 : 0;
 
     map.flyTo([target.data.lat, target.data.lng], target.data.zoom || 12, {
       duration: 1.5,
-      // 画面下部（ドロワー部分）を避けて、上半分の中央にマーカーを収める
       paddingBottomRight: [0, paddingBottom]
     });
-    
+
     target.marker.openPopup();
     
     document.querySelectorAll('.spot-card').forEach(c => c.classList.remove('active'));

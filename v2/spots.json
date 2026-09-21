@@ -1,5 +1,15 @@
 [
     {
+    "id": "chozawa",
+    "title": "西武観光バス 長沢",
+    "lat": 36.074530,
+    "lng": 138.902124,
+    "imageUrl": "https://assets.st-note.com/img/1789910072-znUdNrpfRAoDOqK5XCLl0Ew2.png?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
+    "noteUrl": "https://note.com/yon4k/n/n17775ee42beb",
+    "tags": ["終点"],
+    "zoom": 12
+    },
+    {
     "id": "zikkokuiriguchi",
     "title": "富士川町ホリデーバス 十谷入口",
     "lat": 35.506380,

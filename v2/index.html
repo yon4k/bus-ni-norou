@@ -498,13 +498,13 @@
       });
     }
 
-    // 5. リストクリック時のフォーカス処理（下コンソールの上に余裕をもって浮かせる）
+    // 5. リストクリック時のフォーカス処理（上部空きエリアのさらに高い位置へ移動）
     function focusSpot(id) {
       const target = allMarkers.find(m => m.id === id);
       if (target) {
         const isMobile = window.innerWidth <= 600;
-        // 下オフセット割合を0.72にし、丸ピンの下端がしっかりコンソールの上へ抜けるよう位置補正
-        const paddingBottom = isMobile ? window.innerHeight * 0.72 : 0;
+        // オフセットを0.85に拡大し、丸ピンと吹き出しを画面最上部の見やすい位置へ確実に引き上げる
+        const paddingBottom = isMobile ? window.innerHeight * 0.85 : 0;
 
         map.flyTo([target.data.lat, target.data.lng], target.data.zoom || 12, {
           duration: 1.2,

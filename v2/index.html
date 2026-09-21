@@ -16,7 +16,7 @@
   <style>
     :root {
       --primary-color: #222222;
-      --bg-glass: rgba(255, 255, 255, 0.92);
+      --bg-glass: rgba(255, 255, 255, 0.94);
       --border-color: rgba(0, 0, 0, 0.08);
       --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.12);
     }
@@ -40,7 +40,7 @@
     }
 
     /* --------------------------------------------------
-       統合サイドバー（左パネル）
+       PC用：左側サイドバー
     -------------------------------------------------- */
     #sidebar {
       position: absolute;
@@ -64,15 +64,14 @@
       transform: translateX(-350px);
     }
 
-    /* サイドバーヘッダー */
     .sidebar-header {
-      padding: 20px 20px 14px 20px;
+      padding: 16px 20px 12px 20px;
       border-bottom: 1px solid var(--border-color);
     }
 
     .sidebar-header h1 {
       margin: 0 0 4px 0;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       letter-spacing: 0.02em;
       color: #111;
@@ -80,25 +79,24 @@
 
     .sidebar-header p {
       margin: 0;
-      font-size: 12px;
+      font-size: 11px;
       color: #666;
-      line-height: 1.5;
+      line-height: 1.4;
       font-weight: 400;
     }
 
-    /* タグフィルターセクション */
     .filter-section {
-      padding: 14px 20px;
+      padding: 12px 20px;
       border-bottom: 1px solid var(--border-color);
     }
 
     .filter-title {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: #888;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .tag-container {
@@ -107,13 +105,12 @@
       gap: 6px;
     }
 
-    /* カプセル型タグボタン */
     .tag-badge {
       background: #f0f0f0;
       color: #555;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
-      padding: 5px 12px;
+      padding: 4px 10px;
       border-radius: 20px;
       cursor: pointer;
       border: 1px solid transparent;
@@ -134,7 +131,6 @@
       font-weight: 700;
     }
 
-    /* スポット一覧リスト */
     .spot-list-section {
       flex: 1;
       overflow-y: auto;
@@ -175,10 +171,9 @@
       box-shadow: 0 0 0 2px #222222;
     }
 
-    /* サムネイル画像（角丸四角） */
     .spot-thumb {
-      width: 52px;
-      height: 52px;
+      width: 48px;
+      height: 48px;
       border-radius: 8px;
       object-fit: cover;
       border: 1px solid rgba(0,0,0,0.08);
@@ -216,7 +211,7 @@
       border-radius: 4px;
     }
 
-    /* サイドバー開閉トグルボタン */
+    /* サイドバー開閉トグルボタン (PC) */
     #sidebar-toggle {
       position: absolute;
       top: 16px;
@@ -241,7 +236,7 @@
     }
 
     /* --------------------------------------------------
-       マップマーカー・ポップアップ（丸型）
+       マップマーカー・ポップアップ
     -------------------------------------------------- */
     .custom-pin-container {
       width: 48px !important;
@@ -299,26 +294,59 @@
       font-weight: 500;
     }
 
+    /* --------------------------------------------------
+       スマホ用レイアウト (幅600px以下：下半分ドロワー)
+    -------------------------------------------------- */
     @media (max-width: 600px) {
       #sidebar {
-        width: calc(100vw - 32px);
+        top: auto;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: auto;
+        height: 48vh; /* 画面下部のおよそ半分に収める */
+        border-radius: 20px;
       }
+
+      /* スマホ時の折りたたみ（下に引っ込む） */
+      #sidebar.collapsed {
+        transform: translateY(calc(100% + 20px));
+      }
+
+      /* スマホ用開閉ボタン（サイドバー右上付近に配置） */
+      #sidebar-toggle {
+        top: auto;
+        bottom: calc(48vh + 20px);
+        left: auto;
+        right: 16px;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+      }
+
       #sidebar.collapsed + #sidebar-toggle {
-        left: 16px;
+        left: auto;
+        right: 16px;
+        bottom: 20px;
       }
-      #sidebar:not(.collapsed) + #sidebar-toggle {
-        left: calc(100vw - 48px);
+
+      /* スマホ用のSVG矢印回転 */
+      #sidebar-toggle svg {
+        transform: rotate(90deg);
+      }
+      #sidebar.collapsed + #sidebar-toggle svg {
+        transform: rotate(-90deg);
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- 左側統合サイドバー -->
+  <!-- 統合サイドバー -->
   <aside id="sidebar">
     <div class="sidebar-header">
       <h1>バスに乗ろう - Photo Map</h1>
-      <p>バスに乗って出かけよう</p>
+      <p>各地のバス停と日常の匂いを記録するマップ</p>
     </div>
 
     <!-- タグフィルター -->
@@ -365,7 +393,7 @@
     let currentSelectedTag = 'ALL';
 
     // 2. spots.json からデータを非同期読み込み
-    fetch('spots.json')
+    fetch('./spots.json')
       .then(response => {
         if (!response.ok) {
           throw new Error('spots.json の読み込みに失敗しました');
@@ -497,13 +525,7 @@
     // 7. サイドバー開閉切り替え
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
-      const toggleBtn = document.getElementById('sidebar-toggle');
       sidebar.classList.toggle('collapsed');
-      
-      const isCollapsed = sidebar.classList.contains('collapsed');
-      toggleBtn.innerHTML = isCollapsed 
-        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>`
-        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>`;
     }
   </script>
 </body>

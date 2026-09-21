@@ -256,7 +256,6 @@
       cursor: pointer;
     }
 
-    /* ポップアップ全体をコンパクトに設計 */
     .popup-content {
       text-align: center;
       width: 160px;
@@ -304,7 +303,7 @@
         right: 12px;
         bottom: 12px;
         width: auto;
-        height: 40vh; /* スマホ下部ドロワーを少しだけコンパクト化 */
+        height: 40vh;
         border-radius: 20px;
       }
 
@@ -320,7 +319,7 @@
       }
 
       .sidebar-header p {
-        display: none; /* スマホではサブタイトルを隠す */
+        display: none;
       }
 
       .filter-section {
@@ -435,7 +434,6 @@
 
         const tagLabels = spot.tags ? spot.tags.map(t => `#${t}`).join(' ') : '';
 
-        // タイトルテキストを直接noteへのリンクにするシンプル設計
         const popupHTML = `
           <div class="popup-content">
             <a href="${spot.noteUrl}" target="_blank" rel="noopener">
@@ -500,13 +498,13 @@
       });
     }
 
-    // 5. リストクリック時のフォーカス処理（上部空きスペースの中央にピンをしっかり収める）
+    // 5. リストクリック時のフォーカス処理（下コンソールの上に余裕をもって浮かせる）
     function focusSpot(id) {
       const target = allMarkers.find(m => m.id === id);
       if (target) {
         const isMobile = window.innerWidth <= 600;
-        // ポップアップ高さを加味し、画面上部の見える範囲の中央へ配置（下オフセット量を約60%に調整）
-        const paddingBottom = isMobile ? window.innerHeight * 0.60 : 0;
+        // 下オフセット割合を0.72にし、丸ピンの下端がしっかりコンソールの上へ抜けるよう位置補正
+        const paddingBottom = isMobile ? window.innerHeight * 0.72 : 0;
 
         map.flyTo([target.data.lat, target.data.lng], target.data.zoom || 12, {
           duration: 1.2,

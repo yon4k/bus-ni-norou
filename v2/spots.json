@@ -29,4 +29,14 @@
     "tags": ["小型"],
     "zoom": 12
   }
+    {
+    "id": "zikkokuiriguchi",
+    "title": "富士川町ホリデーバス 十谷入口",
+    "lat": 35.506380,
+    "lng": 138.398897,
+    "imageUrl": "https://assets.st-note.com/img/1789953205-4yobz2OqGPvLJYjBItEfa1eH.png?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
+    "noteUrl": "https://note.com/preview/n7555e108f36e?prev_access_key=bca4eae9573c81249d954f78efc22395",
+    "tags": ["終点"],
+    "zoom": 12
+  },
 ]

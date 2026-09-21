@@ -236,7 +236,7 @@
     }
 
     /* --------------------------------------------------
-       マップマーカー・ポップアップ
+       マップマーカー・コンパクトポップアップ
     -------------------------------------------------- */
     .custom-pin-container {
       width: 48px !important;
@@ -256,42 +256,42 @@
       cursor: pointer;
     }
 
+    /* ポップアップ全体をコンパクトに設計 */
     .popup-content {
       text-align: center;
-      max-width: 200px;
+      width: 160px;
       font-family: 'Zen Kaku Gothic New', sans-serif;
+      padding: 2px 0;
     }
 
     .popup-content img {
       width: 100%;
-      height: auto;
+      height: 90px;
+      object-fit: cover;
       border-radius: 6px;
       margin-bottom: 6px;
     }
 
-    .popup-content h4 {
-      margin: 4px 0 2px 0;
-      font-size: 14px;
+    .popup-title-link {
+      display: block;
+      margin: 2px 0 4px 0;
+      font-size: 13px;
       font-weight: 700;
-      color: #333;
+      color: #111;
+      text-decoration: none;
+      line-height: 1.3;
+      transition: color 0.2s ease;
+    }
+
+    .popup-title-link:hover {
+      color: #0066cc;
+      text-decoration: underline;
     }
 
     .popup-tags {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 500;
-      color: #666;
-      margin-bottom: 8px;
-    }
-
-    .popup-content a {
-      display: inline-block;
-      padding: 6px 12px;
-      background-color: #222222;
-      color: #ffffff;
-      text-decoration: none;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
+      color: #777;
     }
 
     /* --------------------------------------------------
@@ -304,13 +304,12 @@
         right: 12px;
         bottom: 12px;
         width: auto;
-        height: 42vh; /* 高さを42vhに微調整 */
+        height: 40vh; /* スマホ下部ドロワーを少しだけコンパクト化 */
         border-radius: 20px;
       }
 
-      /* スマホ用のヘッダー調整：サブタイトル非表示＆タイトル小型化 */
       .sidebar-header {
-        padding: 12px 16px 10px 16px;
+        padding: 10px 16px 8px 16px;
       }
 
       .sidebar-header h1 {
@@ -325,7 +324,7 @@
       }
 
       .filter-section {
-        padding: 10px 16px;
+        padding: 8px 16px;
       }
 
       #sidebar.collapsed {
@@ -334,7 +333,7 @@
 
       #sidebar-toggle {
         top: auto;
-        bottom: calc(42vh + 20px);
+        bottom: calc(40vh + 20px);
         left: auto;
         right: 16px;
         border-radius: 50%;
@@ -436,12 +435,16 @@
 
         const tagLabels = spot.tags ? spot.tags.map(t => `#${t}`).join(' ') : '';
 
+        // タイトルテキストを直接noteへのリンクにするシンプル設計
         const popupHTML = `
           <div class="popup-content">
-            <img src="${spot.imageUrl}" alt="photo">
-            <h4>${spot.title}</h4>
+            <a href="${spot.noteUrl}" target="_blank" rel="noopener">
+              <img src="${spot.imageUrl}" alt="photo">
+            </a>
+            <a href="${spot.noteUrl}" target="_blank" rel="noopener" class="popup-title-link">
+              ${spot.title}
+            </a>
             <div class="popup-tags">${tagLabels}</div>
-            <a href="${spot.noteUrl}" target="_blank" rel="noopener">noteで読む</a>
           </div>
         `;
 
@@ -497,13 +500,13 @@
       });
     }
 
-    // 5. リストクリック時のフォーカス処理（上部空きエリアの中央にしっかり寄せる）
+    // 5. リストクリック時のフォーカス処理（上部空きスペースの中央にピンをしっかり収める）
     function focusSpot(id) {
       const target = allMarkers.find(m => m.id === id);
       if (target) {
         const isMobile = window.innerWidth <= 600;
-        // スマホ時は画面下部の約75%分をオフセットとして避け、上部の見える範囲の中央へ配置
-        const paddingBottom = isMobile ? window.innerHeight * 0.75 : 0;
+        // ポップアップ高さを加味し、画面上部の見える範囲の中央へ配置（下オフセット量を約60%に調整）
+        const paddingBottom = isMobile ? window.innerHeight * 0.60 : 0;
 
         map.flyTo([target.data.lat, target.data.lng], target.data.zoom || 12, {
           duration: 1.2,

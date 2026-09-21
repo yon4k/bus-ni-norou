@@ -1,5 +1,15 @@
 [
     {
+    "id": "fuze",
+    "title": "東武バス 布瀬",
+    "lat": 35.838349,
+    "lng": 140.089647,
+    "imageUrl": "https://assets.st-note.com/production/uploads/images/315932079/rectangle_large_type_2_2d8ca75b8e847d680dbfac07ff5736ec.jpg?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
+    "noteUrl": "https://note.com/yon4k/n/nf87f965050d2",
+    "tags": ["終点"],
+    "zoom": 12
+    },
+    {
     "id": "chozawa",
     "title": "西武観光バス 長沢",
     "lat": 36.074530,

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>バスに乗ろう - Photo Map</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- Google Fonts: Zen Kaku Gothic New -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #222222;
+      --bg-glass: rgba(255, 255, 255, 0.92);
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Zen Kaku Gothic New', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+      color: #333;
+    }
+
+    #map {
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    /* --------------------------------------------------
+       統合サイドバー（左パネル）
+    -------------------------------------------------- */
+    #sidebar {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      bottom: 16px;
+      width: 320px;
+      z-index: 1000;
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #sidebar.collapsed {
+      transform: translateX(-350px);
+    }
+
+    /* サイドバーヘッダー */
+    .sidebar-header {
+      padding: 20px 20px 14px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-header h1 {
+      margin: 0 0 4px 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #111;
+    }
+
+    .sidebar-header p {
+      margin: 0;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* タグフィルターセクション */
+    .filter-section {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .filter-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* カプセル型タグボタン */
+    .tag-badge {
+      background: #f0f0f0;
+      color: #555;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      outline: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .tag-badge:hover {
+      background: #e2e2e2;
+      color: #111;
+    }
+
+    .tag-badge.active {
+      background: #222222;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    /* スポット一覧リスト */
+    .spot-list-section {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+    }
+
+    .spot-list-section::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .spot-list-section::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+    }
+
+    .spot-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .spot-card:hover {
+      border-color: rgba(0, 0, 0, 0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .spot-card.active {
+      border-color: #222222;
+      background: #fdfdfd;
+      box-shadow: 0 0 0 2px #222222;
+    }
+
+    /* サムネイル画像（角丸四角） */
+    .spot-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid rgba(0,0,0,0.08);
+      flex-shrink: 0;
+    }
+
+    .spot-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .spot-info h3 {
+      margin: 0 0 4px 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: #111;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: 0.01em;
+    }
+
+    .spot-tags-inline {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .inline-tag {
+      font-size: 10px;
+      font-weight: 500;
+      color: #666;
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* サイドバー開閉トグルボタン */
+    #sidebar-toggle {
+      position: absolute;
+      top: 16px;
+      left: 348px;
+      z-index: 1000;
+      width: 36px;
+      height: 36px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #sidebar.collapsed + #sidebar-toggle {
+      left: 16px;
+    }
+
+    /* --------------------------------------------------
+       マップマーカー・ポップアップ（丸型）
+    -------------------------------------------------- */
+    .custom-pin-container {
+      width: 48px !important;
+      height: 48px !important;
+      border-radius: 50% !important;
+      overflow: hidden;
+    }
+
+    .photo-pin {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 50% !important;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      object-fit: cover;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    .popup-content {
+      text-align: center;
+      max-width: 200px;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+    }
+
+    .popup-content img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .popup-content h4 {
+      margin: 4px 0 2px 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .popup-tags {
+      font-size: 11px;
+      font-weight: 500;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .popup-content a {
+      display: inline-block;
+      padding: 6px 12px;
+      background-color: #222222;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      #sidebar {
+        width: calc(100vw - 32px);
+      }
+      #sidebar.collapsed + #sidebar-toggle {
+        left: 16px;
+      }
+      #sidebar:not(.collapsed) + #sidebar-toggle {
+        left: calc(100vw - 48px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 左側統合サイドバー -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <h1>バスに乗ろう - Photo Map</h1>
+      <p>バスに乗って出かけよう</p>
+    </div>
+
+    <!-- タグフィルター -->
+    <div class="filter-section">
+      <div class="filter-title">Filter by Tag</div>
+      <div id="tag-container" class="tag-container">
+        <button class="tag-badge active" onclick="filterMarkers('ALL', this)">すべて</button>
+      </div>
+    </div>
+
+    <!-- スポットカード一覧 -->
+    <div class="spot-list-section" id="spot-list">
+      <!-- JSで動的更新 -->
+    </div>
+  </aside>
+
+  <!-- サイドバー開閉ボタン -->
+  <button id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  </button>
+
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <script>
+    // 1. 地図の初期化
+    const map = L.map('map', {
+      zoomControl: false
+    }).setView([36.578056, 136.648056], 5);
+
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
+    }).addTo(map);
+
+    const allMarkers = [];
+    const tagSet = new Set();
+    let currentSelectedTag = 'ALL';
+
+    // 2. spots.json からデータを非同期読み込み
+    fetch('spots.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('spots.json の読み込みに失敗しました');
+        }
+        return response.json();
+      })
+      .then(spots => {
+        initMapSpots(spots);
+      })
+      .catch(error => {
+        console.error('エラー:', error);
+      });
+
+    // 3. マーカー配置とUI初期化
+    function initMapSpots(spots) {
+      spots.forEach(spot => {
+        if (spot.tags) {
+          spot.tags.forEach(t => tagSet.add(t));
+        }
+
+        const customIcon = L.divIcon({
+          className: 'custom-pin-container',
+          html: `<img src="${spot.imageUrl}" class="photo-pin" alt="preview">`,
+          iconSize: [48, 48],
+          iconAnchor: [24, 24]
+        });
+
+        const tagLabels = spot.tags ? spot.tags.map(t => `#${t}`).join(' ') : '';
+
+        const popupHTML = `
+          <div class="popup-content">
+            <img src="${spot.imageUrl}" alt="photo">
+            <h4>${spot.title}</h4>
+            <div class="popup-tags">${tagLabels}</div>
+            <a href="${spot.noteUrl}" target="_blank" rel="noopener">noteで読む</a>
+          </div>
+        `;
+
+        const marker = L.marker([spot.lat, spot.lng], { icon: customIcon })
+          .addTo(map)
+          .bindPopup(popupHTML);
+
+        allMarkers.push({
+          id: spot.id,
+          marker: marker,
+          data: spot
+        });
+      });
+
+      // タグフィルターボタンの構築
+      const tagContainer = document.getElementById('tag-container');
+      tagSet.forEach(tag => {
+        const btn = document.createElement('button');
+        btn.className = 'tag-badge';
+        btn.innerText = `# ${tag}`;
+        btn.onclick = () => filterMarkers(tag, btn);
+        tagContainer.appendChild(btn);
+      });
+
+      updateSpotList();
+    }
+
+    // 4. サイドバーのリスト更新処理
+    function updateSpotList() {
+      const spotList = document.getElementById('spot-list');
+      spotList.innerHTML = '';
+
+      allMarkers.forEach(item => {
+        const spot = item.data;
+        const isVisible = currentSelectedTag === 'ALL' || (spot.tags && spot.tags.includes(currentSelectedTag));
+
+        if (isVisible) {
+          const card = document.createElement('div');
+          card.className = 'spot-card';
+          card.id = `card-${spot.id}`;
+          card.onclick = () => focusSpot(spot.id);
+
+          const tagsHTML = spot.tags ? spot.tags.map(t => `<span class="inline-tag">#${t}</span>`).join('') : '';
+
+          card.innerHTML = `
+            <img src="${spot.imageUrl}" class="spot-thumb" alt="${spot.title}">
+            <div class="spot-info">
+              <h3>${spot.title}</h3>
+              <div class="spot-tags-inline">${tagsHTML}</div>
+            </div>
+          `;
+          spotList.appendChild(card);
+        }
+      });
+    }
+
+    // 5. リストクリック時のフォーカス処理
+    function focusSpot(id) {
+      const target = allMarkers.find(m => m.id === id);
+      if (target) {
+        map.flyTo([target.data.lat, target.data.lng], target.data.zoom || 12, {
+          duration: 1.5
+        });
+        target.marker.openPopup();
+        
+        document.querySelectorAll('.spot-card').forEach(c => c.classList.remove('active'));
+        const activeCard = document.getElementById(`card-${id}`);
+        if (activeCard) activeCard.classList.add('active');
+      }
+    }
+
+    // 6. 絞り込み機能
+    function filterMarkers(selectedTag, clickedBtn) {
+      currentSelectedTag = selectedTag;
+      document.querySelectorAll('.tag-badge').forEach(btn => btn.classList.remove('active'));
+      if (clickedBtn) clickedBtn.classList.add('active');
+
+      allMarkers.forEach(item => {
+        const spotTags = item.data.tags || [];
+        if (selectedTag === 'ALL' || spotTags.includes(selectedTag)) {
+          if (!map.hasLayer(item.marker)) {
+            map.addLayer(item.marker);
+          }
+        } else {
+          if (map.hasLayer(item.marker)) {
+            map.removeLayer(item.marker);
+          }
+        }
+      });
+
+      updateSpotList();
+    }
+
+    // 7. サイドバー開閉切り替え
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.getElementById('sidebar-toggle');
+      sidebar.classList.toggle('collapsed');
+      
+      const isCollapsed = sidebar.classList.contains('collapsed');
+      toggleBtn.innerHTML = isCollapsed 
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>`;
+    }
+  </script>
+</body>
+</html>

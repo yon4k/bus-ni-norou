@@ -1,5 +1,15 @@
 [
     {
+    "id": "yunosawa",
+    "title": "国際興業バス 湯の沢",
+    "lat": 35.920546,
+    "lng": 139.151230,
+    "imageUrl": "https://assets.st-note.com/production/uploads/images/316762446/rectangle_large_type_2_ed604a05da50be120736cbd2769c5e11.jpg?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
+    "noteUrl": "https://note.com/yon4k/n/n5b4484b5641b",
+    "tags": ["終点"],
+    "zoom": 12
+    },
+    {
     "id": "hakuhosen",
     "title": "白棚線 バス専用道の沿線を歩く",
     "lat": 37.056055,

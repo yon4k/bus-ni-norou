@@ -1,5 +1,15 @@
 [
     {
+    "id": "zizodo",
+    "title": "箱根登山バス 地蔵堂",
+    "lat": 35.317147,
+    "lng": 139.031819,
+    "imageUrl": "https://assets.st-note.com/production/uploads/images/317739942/rectangle_large_type_2_bed8dc74ff526b153384d57ba2bc1265.jpg?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
+    "noteUrl": "https://note.com/yon4k/n/n56863ba7f8a0",
+    "tags": ["終点"],
+    "zoom": 12
+    },
+    {
     "id": "nakazawa",
     "title": "国際興業バス 中沢",
     "lat": 35.886802,

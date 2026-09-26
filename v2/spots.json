@@ -1,5 +1,15 @@
 [
     {
+    "id": "nakazawa",
+    "title": "国際興業バス 中沢",
+    "lat": 35.886802,
+    "lng": 139.207892,
+    "imageUrl": "https://assets.st-note.com/production/uploads/images/316756700/rectangle_large_type_2_a54384393673d9cdc4fd853e13dd7877.jpg?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
+    "noteUrl": "https://note.com/yon4k/n/n89c2938abdb2",
+    "tags": ["終点"],
+    "zoom": 12
+    },
+    {
     "id": "yunosawa",
     "title": "国際興業バス 湯の沢",
     "lat": 35.920546,

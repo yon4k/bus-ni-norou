@@ -79,7 +79,7 @@
     "tags": ["沿線","E尺エルガミオ"],
     "zoom": 12
 　  },
-　　  {
+    {
     "id": "ogasawara",
     "title": "小笠原村営バス 小港海岸",
     "lat": 27.0602,
@@ -88,8 +88,8 @@
     "noteUrl": "https://note.com/yon4k/n/na43451778855",
     "tags": ["終点"],
     "zoom": 13
-　　  },
-　　  {
+    },
+    {
     "id": "fujikyu",
     "title": "富士急モビリティ 高尾",
     "lat": 35.3415,
@@ -98,5 +98,5 @@
     "noteUrl": "https://note.com/yon4k/n/n29549ae1e14a",
     "tags": ["終点"],
     "zoom": 12
- 　　 }
+ 　 }
 ]

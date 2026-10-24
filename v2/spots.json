@@ -1,4 +1,14 @@
-[
+[    
+    {
+    "id": "komuro",
+    "title": "富士川町ホリデーバス 小室",
+    "lat": 35.543872,
+    "lng": 138.433911,
+    "imageUrl": "https://assets.st-note.com/production/uploads/images/319106308/rectangle_large_type_2_a37368c4ad772dee55997c47235325dd.jpg?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
+    "noteUrl": "https://note.com/yon4k/n/nbbaa7a68313c",
+    "tags": ["終点"],
+    "zoom": 12
+    },
     {
     "id": "fuze",
     "title": "東武バス 布瀬",

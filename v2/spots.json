@@ -1,4 +1,14 @@
-[    
+[   
+    {
+    "id": "takematsu",
+    "title": "箱根登山バス 竹松界隈の思い出",
+    "lat": 35.326535,
+    "lng": 139.117826,
+    "imageUrl": "https://assets.st-note.com/production/uploads/images/330985555/rectangle_large_type_2_276650470a27b0149321ec975f62cda5.jpg?width=4000&height=4000&fit=bounds&format=jpg&quality=90",
+    "noteUrl": "https://note.com/yon4k/n/n82909a855cf2",
+    "tags": ["沿線"],
+    "zoom": 12
+    },
     {
     "id": "komuro",
     "title": "富士川町ホリデーバス 小室",
